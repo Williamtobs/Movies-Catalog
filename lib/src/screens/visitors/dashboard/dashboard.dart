@@ -49,14 +49,15 @@ class VisitorDashBoard extends StatelessWidget {
                           ),
                           child: TextButton(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
                                   return const MoviesSchedule();
                                 }));
                               },
                               child: const Text(
                                 'View Schedule',
-                                style:
-                                    TextStyle(color: Colors.white, fontSize: 14),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14),
                               )),
                         )
                       ],
@@ -72,7 +73,8 @@ class VisitorDashBoard extends StatelessWidget {
                   children: const [
                     Text(
                       'Popular Movies',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                     ),
                     Text(
                       'View More',
@@ -119,7 +121,8 @@ class VisitorDashBoard extends StatelessWidget {
                   children: const [
                     Text(
                       'Available Movies',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                     ),
                     Text(
                       'View More',
@@ -131,10 +134,26 @@ class VisitorDashBoard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Padding(
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                  child: ListView.builder(
+                      itemCount: movies.length,
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return AvailableMovie(
+                            movieCover: movies[index].movieCover,
+                            movieName: movies[index].movieName);
+                      }),
+                ),
+              ),
+              /*const Padding(
                 padding: EdgeInsets.only(left: 15.0, right: 15.0),
                 child: AvailableMovie(
-                    movieCover: 'assets/survive_2022.jpg', movieName: 'Survive'),
+                    movieCover: 'assets/survive_2022.jpg',
+                    movieName: 'Survive'),
               ),
               const SizedBox(height: 10),
               const Padding(
@@ -142,7 +161,7 @@ class VisitorDashBoard extends StatelessWidget {
                 child: AvailableMovie(
                     movieCover: 'assets/the_devil.jpg',
                     movieName: 'The Devil You Know'),
-              )
+              )*/
             ],
           ),
         ),
@@ -161,8 +180,10 @@ List<MovieCard> movies = [
 ];
 
 List<AvailableMovie> movies2 = [
-  const AvailableMovie(movieCover: 'assets/survive_2022.jpg', movieName: 'Survive'),
-  const AvailableMovie(movieCover: 'assets/takedown.jpg', movieName: 'TakeDown'),
+  const AvailableMovie(
+      movieCover: 'assets/survive_2022.jpg', movieName: 'Survive'),
+  const AvailableMovie(
+      movieCover: 'assets/takedown.jpg', movieName: 'TakeDown'),
   const AvailableMovie(
       movieCover: 'assets/the_devil.jpg', movieName: 'The Devil You Know'),
   const AvailableMovie(
@@ -199,7 +220,8 @@ class AvailableMovie extends StatelessWidget {
               Text(
                 movieName,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 5),
               const Text(
