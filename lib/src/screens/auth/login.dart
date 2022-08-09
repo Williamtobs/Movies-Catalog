@@ -3,16 +3,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../admin/dashboard/dashboard_view.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController email = TextEditingController();
+
   final TextEditingController password = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  bool loading = false;
+
   login(String email, String password, BuildContext context) async {
     //FirebaseAuth.instance
+    setState(() {
+      loading = true;
+    });
     _auth
         .signInWithEmailAndPassword(email: email, password: password)
         .then((value) {
@@ -25,11 +36,17 @@ class LoginScreen extends StatelessWidget {
             onPressed: () {},
           ),
         ));
+        setState(() {
+          loading = false;
+        });
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const AdminDashboardView();
         }));
       }
     }).catchError((e) {
+      setState(() {
+        loading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
         duration: const Duration(seconds: 5),
@@ -142,10 +159,14 @@ class LoginScreen extends StatelessWidget {
                         return const AdminDashboardView();
                       }));*/
                     },
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ))),
+                    child: loading == true
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text(
+                            'Login',
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          ))),
           ],
         ),
       ),

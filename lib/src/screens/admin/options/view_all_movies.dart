@@ -1,9 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
+
+import 'add_movie.dart';
 
 class ViewALlMovies extends ConsumerWidget {
   const ViewALlMovies({Key? key}) : super(key: key);
+
+  addToPopular(
+      String title, String desc, String period, BuildContext context) async {
+    CollectionReference reference =
+        FirebaseFirestore.instance.collection('popular');
+    await reference
+        .add({'title': title, 'desc': desc, 'period': period}).then((value) {
+      print(value);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Movie added Successfully'),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      ));
+    });
+  }
+
+  deleteMovie(int index, AsyncSnapshot snapshot) async {
+    await FirebaseFirestore.instance
+        .runTransaction((Transaction myTransaction) async {
+      await myTransaction.delete(snapshot.data.docs[index].reference);
+    });
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,87 +57,130 @@ class ViewALlMovies extends ConsumerWidget {
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w700),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("movies").snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Color.fromRGBO(51, 51, 51, 1),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const AddMovie();
+                }));
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                padding: const EdgeInsets.only(left: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color.fromRGBO(51, 51, 51, 1),
                 ),
-              );
-            }
-            if (snapshot.hasData) {
-              if (snapshot.data!.docs.isNotEmpty) {
-                return Padding(
-                  padding:
-                      const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 50,
-                        padding: const EdgeInsets.only(left: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: const Color.fromRGBO(51, 51, 51, 1),
+                child: Row(
+                  children: const [
+                    Icon(Icons.add_circle, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text(
+                      'Add new movie',
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("movies")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Color.fromRGBO(51, 51, 51, 1),
                         ),
-                        child: Row(
-                          children: const [
-                            Icon(Icons.add_circle, color: Colors.white),
-                            SizedBox(width: 10),
-                            Text(
-                              'Add new movie',
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 15.0, right: 15.0),
-                          child: ListView.builder(
-                              itemCount: snapshot.data!.docs.length,
-                              physics: const BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return EachTile(
-                                    desc: snapshot.data!.docs[0]['title'],
-                                    image: 'assets/survive_2022.jpg',
-                                    title: snapshot.data!.docs[0]['title']);
-                              }),
-                        ),
-                      ),
-                      /*EachTile(
-                        desc:
-                            'When their plane crashes on a remote snow-covered mountain, '
-                            'Jane and Paul have to fight for their lives as the only '
-                            'remaining survivors.',
-                        image: 'assets/survive_2022.jpg',
-                        title: snapshot.data!.docs[0]['title'],
-                      )*/
-                    ],
-                  ),
-                );
-              }
-              return const Center(child: Text('Collection Empty'));
-            }
-            return const Text('Something went wrong, retry later');
-          }),
+                      );
+                    }
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.docs.isNotEmpty) {
+                        return SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: ListView.builder(
+                                      padding: const EdgeInsets.all(0),
+                                      itemCount: snapshot.data!.docs.length,
+                                      physics: const BouncingScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 8.0),
+                                          child: EachTile(
+                                            desc: snapshot.data!.docs[index]
+                                                ['desc'],
+                                            image: 'assets/nollywood.jpg',
+                                            title: snapshot.data!.docs[index]
+                                                ['title'],
+                                            //deleteMovie
+                                            onPressed: () {
+                                              addToPopular(
+                                                  snapshot.data!.docs[index]
+                                                      ['title'],
+                                                  snapshot.data!.docs[index]
+                                                      ['desc'],
+                                                  snapshot.data!.docs[index]
+                                                      ['period'],
+                                                  context);
+                                            },
+                                            onPressed2: () {
+                                              deleteMovie(index, snapshot);
+                                            },
+                                          ),
+                                        );
+                                      }),
+                                ),
+                              ),
+                              /*EachTile(
+                                desc:
+                                    'When their plane crashes on a remote snow-covered mountain, '
+                                    'Jane and Paul have to fight for their lives as the only '
+                                    'remaining survivors.',
+                                image: 'assets/survive_2022.jpg',
+                                title: snapshot.data!.docs[0]['title'],
+                              )*/
+                            ],
+                          ),
+                        );
+                      }
+                      return const Center(child: Text('Collection Empty'));
+                    }
+                    return const Text('Something went wrong, retry later');
+                  }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
 class EachTile extends StatelessWidget {
   final String title, desc, image;
+  final Function onPressed, onPressed2;
 
   const EachTile(
-      {Key? key, required this.title, required this.desc, required this.image})
+      {Key? key,
+      required this.title,
+      required this.desc,
+      required this.image,
+      required this.onPressed,
+      required this.onPressed2})
       : super(key: key);
 
   @override
@@ -116,7 +188,7 @@ class EachTile extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 120,
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -150,12 +222,30 @@ class EachTile extends StatelessWidget {
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Icon(Icons.more_vert),
-              Icon(
-                Icons.delete,
-                color: Color.fromRGBO(51, 51, 51, 1),
-              )
+            children: [
+              FocusedMenuHolder(
+                  menuWidth: MediaQuery.of(context).size.width * 0.50,
+                  blurSize: 5.0,
+                  duration: const Duration(milliseconds: 100),
+                  animateMenuItems: true,
+                  openWithTap: true,
+                  // Open Focused-Menu on Tap rather than Long Press
+                  menuOffset: 10.0,
+                  // Offset value to show menuItem from the selected item
+                  bottomOffsetHeight: 80.0,
+                  onPressed: () {},
+                  menuItems: <FocusedMenuItem>[
+                    FocusedMenuItem(
+                      title: const Text('Add to Popular Movies'),
+                      onPressed: onPressed,
+                    ),
+                    FocusedMenuItem(
+                      title: const Text('Remove from Movies'),
+                      onPressed: onPressed2,
+                    ),
+                  ],
+                  menuItemExtent: 45,
+                  child: const Icon(Icons.more_vert)),
             ],
           )
         ],

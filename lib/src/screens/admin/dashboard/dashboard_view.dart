@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../options/add_movie.dart';
+import '../options/others.dart';
+import '../options/periods/periods.dart';
 import '../options/view_all_movies.dart';
 
 class AdminDashboardView extends StatelessWidget {
@@ -54,6 +56,19 @@ class AdminDashboardView extends StatelessWidget {
                                   return const AddMovie();
                                 }));
                                 //AddMovie
+                              }
+                              else if (grid['title'] as String == 'View Popular Movies'){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return const OthersOptions(keys: 'popular', option: 'Popular Movies',);
+                                    }));
+                              }
+                              else{
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return const Periods();
+                                    }));
+                                //Periods
                               }
                               //grid['title'] as String == ''
                               //ViewALlMovies

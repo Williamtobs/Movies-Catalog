@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MoviesDetails extends StatelessWidget {
-  final String title, image;
+  final String title, image, desc, time;
 
-  const MoviesDetails({Key? key, required this.title, required this.image})
+  const MoviesDetails({Key? key, required this.title, required this.image, required this.desc, required this.time})
       : super(key: key);
 
   @override
@@ -51,11 +51,11 @@ class MoviesDetails extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Padding(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0),
+          Padding(
+            padding:const EdgeInsets.only(left: 15.0, right: 15.0),
             child: Text(
-              'Morning: 10:00 am',
-              style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
+              time,
+              style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
             ),
           ),
           const SizedBox(height: 20),
@@ -67,14 +67,11 @@ class MoviesDetails extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5),
-          const Padding(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
             child: Text(
-              'When their plane crashes on a remote snow-covered mountain, '
-              'Jane and Paul have to fight for their lives as the only '
-              'remaining survivors. Together they embark on a harrowing '
-              'journey out of the wilderness.',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+              desc,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
             ),
           )
         ],
