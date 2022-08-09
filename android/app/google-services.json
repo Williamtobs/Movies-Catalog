@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "251017460694",
+    "project_id": "movies-catalog-a0e65",
+    "storage_bucket": "movies-catalog-a0e65.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251017460694:android:1d7e144fe2d697779b0277",
+        "android_client_info": {
+          "package_name": "com.example.movie_catalog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251017460694-kqtdr1c1kas8j535ierd79f7b69gckm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8HOPm1ffNKeii_MgmhUFXJectCTQetNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251017460694-kqtdr1c1kas8j535ierd79f7b69gckm2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

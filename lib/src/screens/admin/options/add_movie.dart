@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AddMovie extends StatefulWidget {
@@ -9,8 +10,46 @@ class AddMovie extends StatefulWidget {
 
 class _AddMovieState extends State<AddMovie> {
   final List schedule = ['Morning', 'Afternoon', 'Night'];
+  final TextEditingController title = TextEditingController();
+  final TextEditingController desc = TextEditingController();
 
   String? selectedText;
+
+  addToCollection(String collection, String title, String desc) async {
+    CollectionReference reference =
+        FirebaseFirestore.instance.collection(collection);
+    await reference.doc(title).set(
+        {'title': title, 'desc': desc, 'period': collection}).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Movie added Successfully'),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      ));
+    });
+  }
+
+  addToMovies(String collection, String title, String desc) async {
+    CollectionReference reference =
+        FirebaseFirestore.instance.collection('movies');
+    await reference.add(
+        {'title': title, 'desc': desc, 'period': collection}).then((value) {
+      if (value != null) {
+        addToCollection(collection, title, desc);
+      }
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(error),
+          duration: const Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Close',
+            onPressed: () {},
+          )));
+    });
+    //await
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +97,10 @@ class _AddMovieState extends State<AddMovie> {
                     height: 50,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: const Color.fromRGBO(197,198,200, 1.0),
+                        color: const Color.fromRGBO(197, 198, 200, 1.0),
                         borderRadius: BorderRadius.circular(15)),
                     child: TextFormField(
+                      controller: title,
                       style: const TextStyle(
                           color: Color.fromRGBO(75, 78, 85, 1),
                           fontSize: 14,
@@ -77,7 +117,7 @@ class _AddMovieState extends State<AddMovie> {
                   const SizedBox(height: 10),
                   const Align(
                     alignment: Alignment.centerLeft,
-                    child:  Text(
+                    child: Text(
                       'Description',
                       style: TextStyle(
                         fontSize: 14,
@@ -90,12 +130,13 @@ class _AddMovieState extends State<AddMovie> {
                     height: 100,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: const Color.fromRGBO(197,198,200, 1.0),
+                        color: const Color.fromRGBO(197, 198, 200, 1.0),
                         borderRadius: BorderRadius.circular(15)),
                     child: TextFormField(
                       keyboardType: TextInputType.multiline,
                       textInputAction: TextInputAction.newline,
                       maxLines: 5,
+                      controller: desc,
                       style: const TextStyle(
                           color: Color.fromRGBO(75, 78, 85, 1),
                           fontSize: 14,
@@ -143,7 +184,8 @@ class _AddMovieState extends State<AddMovie> {
                                   border: selectedText == schedule[index]
                                       ? null
                                       : Border.all(
-                                          color: const Color.fromRGBO(75, 78, 85, 1)),
+                                          color: const Color.fromRGBO(
+                                              75, 78, 85, 1)),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: Center(
@@ -172,6 +214,12 @@ class _AddMovieState extends State<AddMovie> {
                 ),
                 child: TextButton(
                     onPressed: () {
+                      if (selectedText != null) {
+                        addToMovies(selectedText!, title.text, desc.text);
+                        title.clear();
+                        desc.clear();
+                      }
+
                       /*Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                             return const AdminDashboardView();
@@ -181,7 +229,9 @@ class _AddMovieState extends State<AddMovie> {
                       'Add Movie',
                       style: TextStyle(color: Colors.white, fontSize: 14),
                     ))),
-            const SizedBox(height: 25,)
+            const SizedBox(
+              height: 25,
+            )
           ],
         ),
       ),

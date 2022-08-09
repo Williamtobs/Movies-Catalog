@@ -1,9 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../admin/dashboard/dashboard_view.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController email = TextEditingController();
+
+  final TextEditingController password = TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool loading = false;
+
+  login(String email, String password, BuildContext context) async {
+    //FirebaseAuth.instance
+    setState(() {
+      loading = true;
+    });
+    _auth
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((value) {
+      if (value.user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('Login Successful'),
+          duration: const Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Close',
+            onPressed: () {},
+          ),
+        ));
+        setState(() {
+          loading = false;
+        });
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const AdminDashboardView();
+        }));
+      }
+    }).catchError((e) {
+      setState(() {
+        loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      ));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +70,17 @@ class LoginScreen extends StatelessWidget {
             const Text(
               'Admin Panel',
               style: TextStyle(
-                  color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800),
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 10),
             const Text(
               'Login to access the Admin Panel',
               style: TextStyle(
-                  color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400),
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400),
             ),
             const SizedBox(
               height: 30,
@@ -36,6 +93,7 @@ class LoginScreen extends StatelessWidget {
                   color: const Color.fromRGBO(37, 42, 52, 1),
                   borderRadius: BorderRadius.circular(15)),
               child: TextFormField(
+                controller: email,
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -66,6 +124,7 @@ class LoginScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15)),
               child: TextFormField(
                 obscureText: true,
+                controller: password,
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -94,15 +153,20 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: TextButton(
                     onPressed: () {
-                      Navigator.push(context,
+                      login(email.text.trim(), password.text.trim(), context);
+                      /* Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                            return const AdminDashboardView();
-                          }));
+                        return const AdminDashboardView();
+                      }));*/
                     },
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ))),
+                    child: loading == true
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text(
+                            'Login',
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          ))),
           ],
         ),
       ),

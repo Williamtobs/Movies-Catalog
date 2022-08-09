@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../admin/options/others.dart';
 import 'each_schedule_view.dart';
 
 class MoviesSchedule extends StatelessWidget {
@@ -41,13 +42,18 @@ class MoviesSchedule extends StatelessWidget {
             ),
           ),
           body: const TabBarView(children: [
-            EachSchedule(),
-            Center(
-              child: Text('Afternoon'),
+            EachOptions (
+              option: 'Morning',
+              keys: 'Morning',
             ),
-            Center(
-              child: Text('Night'),
-            )
+            EachOptions (
+              option: 'Afternoon',
+              keys: 'Afternoon',
+            ),
+            EachOptions (
+              option: 'Night',
+              keys: 'Night',
+            ),
           ])),
     );
   }
