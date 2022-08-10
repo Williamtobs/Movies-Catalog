@@ -20,11 +20,17 @@ class OnboardScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              const Text(
-                'Movies Catalog',
+              Text(
+                'Ibata Tv',
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
+                    shadows: [
+                      Shadow(
+                          color: Colors.white.withOpacity(0.7),
+                          offset: const Offset(8, 8),
+                          blurRadius: 5),
+                    ],
+                    color: const Color.fromRGBO(121, 177, 65, 1),
+                    fontSize: 30,
                     fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 10),

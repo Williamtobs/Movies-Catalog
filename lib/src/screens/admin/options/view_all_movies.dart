@@ -6,8 +6,33 @@ import 'package:focused_menu/modals.dart';
 
 import 'add_movie.dart';
 
-class ViewALlMovies extends ConsumerWidget {
+class ViewALlMovies extends ConsumerStatefulWidget {
   const ViewALlMovies({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<ViewALlMovies> createState() => _ViewALlMovies();
+}
+
+class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
+
+  final TextEditingController title = TextEditingController();
+
+  List<dynamic> searchList = [];
+  List<dynamic> movieList = [];
+
+  performSearch(String searchText) {
+    searchText.trim();
+    searchList.clear();
+    if (searchText.isNotEmpty) {
+      for (int i = 0; i < movieList.length; i++) {
+        if (movieList[i]['title']
+            .toLowerCase()
+            .contains(searchText.toLowerCase())) {
+          searchList.add(movieList[i]);
+        }
+      }
+    }
+  }
 
   addToPopular(
       String title, String desc, String period, BuildContext context) async {
@@ -15,7 +40,6 @@ class ViewALlMovies extends ConsumerWidget {
         FirebaseFirestore.instance.collection('popular');
     await reference
         .add({'title': title, 'desc': desc, 'period': period}).then((value) {
-      print(value);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text('Movie added Successfully'),
         duration: const Duration(seconds: 2),
@@ -35,7 +59,7 @@ class ViewALlMovies extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
@@ -88,81 +112,157 @@ class ViewALlMovies extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection("movies")
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Color.fromRGBO(51, 51, 51, 1),
-                        ),
-                      );
-                    }
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.docs.isNotEmpty) {
-                        return SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: ListView.builder(
-                                      padding: const EdgeInsets.all(0),
-                                      itemCount: snapshot.data!.docs.length,
-                                      physics: const BouncingScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemBuilder: (context, index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: 8.0),
-                                          child: EachTile(
-                                            desc: snapshot.data!.docs[index]
-                                                ['desc'],
-                                            image: 'assets/nollywood.jpg',
-                                            title: snapshot.data!.docs[index]
-                                                ['title'],
-                                            //deleteMovie
-                                            onPressed: () {
-                                              addToPopular(
-                                                  snapshot.data!.docs[index]
-                                                      ['title'],
-                                                  snapshot.data!.docs[index]
-                                                      ['desc'],
-                                                  snapshot.data!.docs[index]
-                                                      ['period'],
-                                                  context);
-                                            },
-                                            onPressed2: () {
-                                              deleteMovie(index, snapshot);
-                                            },
-                                          ),
-                                        );
-                                      }),
-                                ),
-                              ),
-                              /*EachTile(
-                                desc:
-                                    'When their plane crashes on a remote snow-covered mountain, '
-                                    'Jane and Paul have to fight for their lives as the only '
-                                    'remaining survivors.',
-                                image: 'assets/survive_2022.jpg',
-                                title: snapshot.data!.docs[0]['title'],
-                              )*/
-                            ],
-                          ),
-                        );
-                      }
-                      return const Center(child: Text('Collection Empty'));
-                    }
-                    return const Text('Something went wrong, retry later');
-                  }),
+            const SizedBox(
+              height: 10,
             ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: const Color.fromRGBO(197, 198, 200, 1.0),
+                  borderRadius: BorderRadius.circular(15)),
+              child: TextFormField(
+                controller: title,
+                onChanged: (text){
+                  setState(() {
+                    performSearch(text);
+                  });
+                },
+                style: const TextStyle(
+                    color: Color.fromRGBO(75, 78, 85, 1),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+                decoration: const InputDecoration(
+                  hintText: 'Search',
+                  hintStyle: TextStyle(color: Colors.white),
+                  isDense: true,
+                  filled: true,
+                  contentPadding: EdgeInsets.all(15),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            title.text.isNotEmpty
+                ? Expanded(
+                  child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: ListView.builder(
+                                  padding: const EdgeInsets.all(0),
+                                  itemCount: searchList.length,
+                                  physics: const BouncingScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 8.0),
+                                      child: EachTile(
+                                        desc: searchList[index]['desc'],
+                                        image: 'assets/logo.jpg',
+                                        title: searchList[index]['title'],
+                                        //deleteMovie
+                                        onPressed: () {
+                                          addToPopular(
+                                              searchList[index]['title'],
+                                              searchList[index]['desc'],
+                                              searchList[index]['period'],
+                                              context);
+                                        },
+                                        onPressed2: () {},
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                )
+                : Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("movies")
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Color.fromRGBO(51, 51, 51, 1),
+                              ),
+                            );
+                          }
+                          if (snapshot.hasData) {
+                            if (snapshot.data!.docs.isNotEmpty) {
+                              movieList = snapshot.data!.docs;
+                              //print(movieList[0]['title']);
+                              return SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10),
+                                        child: ListView.builder(
+                                            padding: const EdgeInsets.all(0),
+                                            itemCount:
+                                                snapshot.data!.docs.length,
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemBuilder: (context, index) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 8.0),
+                                                child: EachTile(
+                                                  desc: snapshot.data!
+                                                      .docs[index]['desc'],
+                                                  image: 'assets/logo.jpg',
+                                                  title: snapshot.data!
+                                                      .docs[index]['title'],
+                                                  //deleteMovie
+                                                  onPressed: () {
+                                                    addToPopular(
+                                                        snapshot.data!
+                                                                .docs[index]
+                                                            ['title'],
+                                                        snapshot.data!
+                                                                .docs[index]
+                                                            ['desc'],
+                                                        snapshot.data!
+                                                                .docs[index]
+                                                            ['period'],
+                                                        context);
+                                                  },
+                                                  onPressed2: () {
+                                                    deleteMovie(
+                                                        index, snapshot);
+                                                  },
+                                                ),
+                                              );
+                                            }),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const Center(
+                                child: Text('Collection Empty'));
+                          }
+                          return const Text(
+                              'Something went wrong, retry later');
+                        }),
+                  ),
           ],
         ),
       ),

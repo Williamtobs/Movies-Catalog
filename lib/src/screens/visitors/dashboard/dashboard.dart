@@ -47,7 +47,7 @@ class VisitorDashBoard extends StatelessWidget {
                           height: 40,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color: const Color.fromRGBO(85, 104, 254, 1),
+                            color: const Color.fromRGBO(121, 177, 65, 1),
                           ),
                           child: TextButton(
                               onPressed: () {
@@ -85,21 +85,22 @@ class VisitorDashBoard extends StatelessWidget {
                           return const OthersOptions(
                             keys: 'popular',
                             option: 'Popular Movies',
+                            admin: false,
                           );
                         }));
                       },
                       child: const Text(
                         'View More',
                         style: TextStyle(
-                            color: Color.fromRGBO(225, 73, 132, 1),
+                            color: Color.fromRGBO(121, 177, 65, 1),
                             fontSize: 14,
-                            fontWeight: FontWeight.w400),
+                            fontWeight: FontWeight.w600),
                       ),
                     )
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection("popular")
@@ -130,7 +131,7 @@ class VisitorDashBoard extends StatelessWidget {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
                                         return MoviesDetails(
-                                          image: 'assets/nollywood.jpg',
+                                          image: 'assets/logo.jpg',
                                           title: snapshot.data!.docs[index]
                                               ['title'],
                                           desc: snapshot.data!.docs[index]
@@ -141,7 +142,7 @@ class VisitorDashBoard extends StatelessWidget {
                                       }));
                                     },
                                     child: MovieCard(
-                                        movieCover: 'assets/nollywood.jpg',
+                                        movieCover: 'assets/logo.jpg',
                                         movieName: snapshot.data!.docs[index]
                                             ['title']),
                                   );
@@ -170,15 +171,16 @@ class VisitorDashBoard extends StatelessWidget {
                           return const OthersOptions(
                             keys: 'movies',
                             option: 'All Movies',
+                            admin: false,
                           );
                         }));
                       },
                       child: const Text(
                         'View More',
                         style: TextStyle(
-                            color: Color.fromRGBO(225, 73, 132, 1),
+                            color: Color.fromRGBO(121, 177, 65, 1),
                             fontSize: 14,
-                            fontWeight: FontWeight.w400),
+                            fontWeight: FontWeight.w600),
                       ),
                     )
                   ],
@@ -214,7 +216,7 @@ class VisitorDashBoard extends StatelessWidget {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
                                         return MoviesDetails(
-                                          image: 'assets/nollywood.jpg',
+                                          image: 'assets/logo.jpg',
                                           title: snapshot.data!.docs[index]
                                               ['title'],
                                           desc: snapshot.data!.docs[index]
@@ -225,7 +227,7 @@ class VisitorDashBoard extends StatelessWidget {
                                       }));
                                     },
                                     child: AvailableMovie(
-                                      movieCover: 'assets/nollywood.jpg',
+                                      movieCover: 'assets/logo.jpg',
                                       movieName: snapshot.data!.docs[index]
                                           ['title'],
                                       desc: snapshot.data!.docs[index]['desc'],

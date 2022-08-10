@@ -13,43 +13,46 @@ class EachOptions extends StatelessWidget {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(keys).snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: Color.fromRGBO(51, 51, 51, 1),
-                      ),
-                    );
-                  }
-                  if (snapshot.hasData) {
-                    if (snapshot.data!.docs.isNotEmpty) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(0),
-                        itemCount: snapshot.data!.docs.length,
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: EachTile(
-                              desc: snapshot.data!.docs[index]['desc'],
-                              image: 'assets/nollywood.jpg',
-                              title: snapshot.data!.docs[index]['title'],
-                            ),
-                          );
-                        },
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection(keys).snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Color.fromRGBO(51, 51, 51, 1),
+                        ),
                       );
                     }
-                    return const Center(child: Text('Collection Empty'));
-                  }
-                  return const Text('Something went wrong, retry later');
-                })
-          ],
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.docs.isNotEmpty) {
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(0),
+                          itemCount: snapshot.data!.docs.length,
+                          physics: const BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: EachTile(
+                                desc: snapshot.data!.docs[index]['desc'],
+                                image: 'assets/logo.jpg',
+                                title: snapshot.data!.docs[index]['title'],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const Center(child: Text('Collection Empty'));
+                    }
+                    return const Text('Something went wrong, retry later');
+                  })
+            ],
+          ),
         ),
       ),
     );

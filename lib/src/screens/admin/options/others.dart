@@ -6,8 +6,10 @@ import 'package:focused_menu/modals.dart';
 class OthersOptions extends StatelessWidget {
   final String option;
   final String keys;
+  final bool? admin;
 
-  const OthersOptions({Key? key, required this.option, required this.keys})
+  const OthersOptions(
+      {Key? key, required this.option, required this.keys, this.admin = true})
       : super(key: key);
 
   deleteMovie(int index, AsyncSnapshot snapshot) async {
@@ -42,46 +44,51 @@ class OthersOptions extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(keys).snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: Color.fromRGBO(51, 51, 51, 1),
-                      ),
-                    );
-                  }
-                  if (snapshot.hasData) {
-                    if (snapshot.data!.docs.isNotEmpty) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(0),
-                        itemCount: snapshot.data!.docs.length,
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: EachTile(
-                              desc: snapshot.data!.docs[index]['desc'],
-                              image: 'assets/nollywood.jpg',
-                              title: snapshot.data!.docs[index]['title'],
-                              onPressed: (){
-                                deleteMovie(index, snapshot);
-                              },
-                            ),
-                          );
-                        },
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              StreamBuilder<QuerySnapshot>(
+                  stream:
+                      FirebaseFirestore.instance.collection(keys).snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Color.fromRGBO(51, 51, 51, 1),
+                        ),
                       );
                     }
-                    return const Center(child: Text('Collection Empty'));
-                  }
-                  return const Text('Something went wrong, retry later');
-                })
-          ],
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.docs.isNotEmpty) {
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(0),
+                          itemCount: snapshot.data!.docs.length,
+                          physics: const BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: EachTile(
+                                desc: snapshot.data!.docs[index]['desc'],
+                                image: 'assets/logo.jpg',
+                                title: snapshot.data!.docs[index]['title'],
+                                admin: admin!,
+                                onPressed: () {
+                                  deleteMovie(index, snapshot);
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const Center(child: Text('Collection Empty'));
+                    }
+                    return const Text('Something went wrong, retry later');
+                  })
+            ],
+          ),
         ),
       ),
     );
@@ -91,13 +98,16 @@ class OthersOptions extends StatelessWidget {
 class EachTile extends StatelessWidget {
   final String title, desc, image;
   final Function onPressed;
+  final bool admin;
 
   const EachTile(
       {Key? key,
       required this.title,
       required this.desc,
       required this.image,
-      required this.onPressed})
+      required this.onPressed,
+      required this.admin
+      })
       : super(key: key);
 
   @override
@@ -137,7 +147,7 @@ class EachTile extends StatelessWidget {
               ],
             ),
           ),
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          admin == true ?Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             FocusedMenuHolder(
                 menuWidth: MediaQuery.of(context).size.width * 0.50,
                 blurSize: 5.0,
@@ -157,7 +167,7 @@ class EachTile extends StatelessWidget {
                 ],
                 menuItemExtent: 45,
                 child: const Icon(Icons.delete)),
-          ])
+          ]) : Container()
         ],
       ),
     );
