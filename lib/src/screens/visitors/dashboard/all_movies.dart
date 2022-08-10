@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:focused_menu/focused_menu.dart';
-import 'package:focused_menu/modals.dart';
 
-import 'add_movie.dart';
+import '../../admin/options/others.dart';
 
-class ViewALlMovies extends ConsumerStatefulWidget {
-  const ViewALlMovies({Key? key}) : super(key: key);
+class AllMovies extends ConsumerStatefulWidget {
+  const AllMovies({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ViewALlMovies> createState() => _ViewALlMovies();
+  ConsumerState<AllMovies> createState() => _AllMovies();
 }
 
-class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
+class _AllMovies extends ConsumerState<AllMovies> {
   final TextEditingController title = TextEditingController();
 
   List<dynamic> searchList = [];
@@ -50,13 +48,6 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
     });
   }
 
-  deleteMovie(int index, AsyncSnapshot snapshot) async {
-    await FirebaseFirestore.instance
-        .runTransaction((Transaction myTransaction) async {
-      await myTransaction.delete(snapshot.data.docs[index].reference);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,35 +76,6 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const AddMovie();
-                }));
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                padding: const EdgeInsets.only(left: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromRGBO(51, 51, 51, 1),
-                ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.add_circle, color: Colors.white),
-                    SizedBox(width: 10),
-                    Text(
-                      'Add new movie',
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
             Container(
               width: MediaQuery.of(context).size.width,
               height: 50,
@@ -167,15 +129,11 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                         desc: searchList[index]['desc'],
                                         image: 'assets/logo.jpg',
                                         title: searchList[index]['title'],
-                                        //deleteMovie
+                                        admin: false,
                                         onPressed: () {
-                                          addToPopular(
-                                              searchList[index]['title'],
-                                              searchList[index]['desc'],
-                                              searchList[index]['period'],
-                                              context);
+                                          // deleteMovie(index, snapshot);
                                         },
-                                        onPressed2: () {},
+                                        //deleteMovie
                                       ),
                                     );
                                   }),
@@ -233,23 +191,9 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                                   image: 'assets/logo.jpg',
                                                   title: snapshot.data!
                                                       .docs[index]['title'],
-                                                  //deleteMovie
+                                                  admin: false,
                                                   onPressed: () {
-                                                    addToPopular(
-                                                        snapshot.data!
-                                                                .docs[index]
-                                                            ['title'],
-                                                        snapshot.data!
-                                                                .docs[index]
-                                                            ['desc'],
-                                                        snapshot.data!
-                                                                .docs[index]
-                                                            ['period'],
-                                                        context);
-                                                  },
-                                                  onPressed2: () {
-                                                    deleteMovie(
-                                                        index, snapshot);
+                                                    //deleteMovie(index, snapshot);
                                                   },
                                                 ),
                                               );
@@ -269,90 +213,6 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                   ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class EachTile extends StatelessWidget {
-  final String title, desc, image;
-  final Function onPressed, onPressed2;
-
-  const EachTile(
-      {Key? key,
-      required this.title,
-      required this.desc,
-      required this.image,
-      required this.onPressed,
-      required this.onPressed2})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 120,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: const Color.fromRGBO(51, 51, 51, 1),
-          )),
-      child: Row(
-        children: [
-          Container(
-            height: 100,
-            width: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image:
-                  DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 5),
-                Text(desc),
-              ],
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FocusedMenuHolder(
-                  menuWidth: MediaQuery.of(context).size.width * 0.50,
-                  blurSize: 5.0,
-                  duration: const Duration(milliseconds: 100),
-                  animateMenuItems: true,
-                  openWithTap: true,
-                  // Open Focused-Menu on Tap rather than Long Press
-                  menuOffset: 10.0,
-                  // Offset value to show menuItem from the selected item
-                  bottomOffsetHeight: 80.0,
-                  onPressed: () {},
-                  menuItems: <FocusedMenuItem>[
-                    FocusedMenuItem(
-                      title: const Text('Add to Popular Movies'),
-                      onPressed: onPressed,
-                    ),
-                    FocusedMenuItem(
-                      title: const Text('Remove from Movies'),
-                      onPressed: onPressed2,
-                    ),
-                  ],
-                  menuItemExtent: 45,
-                  child: const Icon(Icons.more_vert)),
-            ],
-          )
-        ],
       ),
     );
   }

@@ -19,7 +19,13 @@ class EachOptions extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection(keys).snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection(keys)
+                      .orderBy(
+                        'title',
+                        descending: false,
+                      )
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -85,7 +91,7 @@ class EachTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image:
-              DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
+                  DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
             ),
           ),
           const SizedBox(width: 10),

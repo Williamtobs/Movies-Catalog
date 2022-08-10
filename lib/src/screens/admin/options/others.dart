@@ -50,8 +50,13 @@ class OthersOptions extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               StreamBuilder<QuerySnapshot>(
-                  stream:
-                      FirebaseFirestore.instance.collection(keys).snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection(keys)
+                      .orderBy(
+                        'title',
+                        descending: false,
+                      )
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -106,8 +111,7 @@ class EachTile extends StatelessWidget {
       required this.desc,
       required this.image,
       required this.onPressed,
-      required this.admin
-      })
+      required this.admin})
       : super(key: key);
 
   @override
@@ -147,27 +151,29 @@ class EachTile extends StatelessWidget {
               ],
             ),
           ),
-          admin == true ?Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            FocusedMenuHolder(
-                menuWidth: MediaQuery.of(context).size.width * 0.50,
-                blurSize: 5.0,
-                duration: const Duration(milliseconds: 100),
-                animateMenuItems: true,
-                openWithTap: true,
-                // Open Focused-Menu on Tap rather than Long Press
-                menuOffset: 10.0,
-                // Offset value to show menuItem from the selected item
-                bottomOffsetHeight: 80.0,
-                onPressed: () {},
-                menuItems: <FocusedMenuItem>[
-                  FocusedMenuItem(
-                    title: const Text('Remove from List'),
-                    onPressed: onPressed,
-                  ),
-                ],
-                menuItemExtent: 45,
-                child: const Icon(Icons.delete)),
-          ]) : Container()
+          admin == true
+              ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  FocusedMenuHolder(
+                      menuWidth: MediaQuery.of(context).size.width * 0.50,
+                      blurSize: 5.0,
+                      duration: const Duration(milliseconds: 100),
+                      animateMenuItems: true,
+                      openWithTap: true,
+                      // Open Focused-Menu on Tap rather than Long Press
+                      menuOffset: 10.0,
+                      // Offset value to show menuItem from the selected item
+                      bottomOffsetHeight: 80.0,
+                      onPressed: () {},
+                      menuItems: <FocusedMenuItem>[
+                        FocusedMenuItem(
+                          title: const Text('Remove from List'),
+                          onPressed: onPressed,
+                        ),
+                      ],
+                      menuItemExtent: 45,
+                      child: const Icon(Icons.delete)),
+                ])
+              : Container()
         ],
       ),
     );

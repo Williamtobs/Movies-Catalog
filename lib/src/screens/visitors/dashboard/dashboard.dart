@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../admin/options/others.dart';
 import '../movie_detail/movie_detail.dart';
 import '../schedules/movies_schedule.dart';
+import 'all_movies.dart';
 
 class VisitorDashBoard extends StatelessWidget {
   const VisitorDashBoard({Key? key}) : super(key: key);
@@ -104,6 +105,10 @@ class VisitorDashBoard extends StatelessWidget {
               StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection("popular")
+                      .orderBy(
+                        'title',
+                        descending: false,
+                      )
                       .limit(4)
                       .snapshots(),
                   builder: (context, snapshot) {
@@ -168,11 +173,7 @@ class VisitorDashBoard extends StatelessWidget {
                       onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return const OthersOptions(
-                            keys: 'movies',
-                            option: 'All Movies',
-                            admin: false,
-                          );
+                          return const AllMovies();
                         }));
                       },
                       child: const Text(
@@ -189,6 +190,10 @@ class VisitorDashBoard extends StatelessWidget {
               StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection("movies")
+                      .orderBy(
+                        'title',
+                        descending: false,
+                      )
                       .limit(4)
                       .snapshots(),
                   builder: (context, snapshot) {
