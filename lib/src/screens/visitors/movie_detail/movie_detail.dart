@@ -9,6 +9,7 @@ class MoviesDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(242,242,242, 1),
       appBar: AppBar(
         leading: InkWell(
           onTap: () {
@@ -32,6 +33,7 @@ class MoviesDetails extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 20),
           Center(
             child: Container(
               height: 300,

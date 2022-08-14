@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../movie_detail/movie_detail.dart';
+
 class EachOptions extends StatelessWidget {
   final String option;
   final String keys;
@@ -20,11 +22,8 @@ class EachOptions extends StatelessWidget {
               const SizedBox(height: 20),
               StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
-                      .collection(keys)
-                      .orderBy(
-                        'title',
-                        descending: false,
-                      )
+                      .collection('movies')
+                      .where('period', isEqualTo: option)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -47,6 +46,8 @@ class EachOptions extends StatelessWidget {
                               child: EachTile(
                                 desc: snapshot.data!.docs[index]['desc'],
                                 image: 'assets/logo.jpg',
+                                time:
+                                    "${snapshot.data!.docs[index]['period']} ${snapshot.data!.docs[index]['time']}",
                                 title: snapshot.data!.docs[index]['title'],
                               ),
                             );
@@ -66,50 +67,62 @@ class EachOptions extends StatelessWidget {
 }
 
 class EachTile extends StatelessWidget {
-  final String title, desc, image;
+  final String title, desc, image, time;
 
   const EachTile(
-      {Key? key, required this.title, required this.desc, required this.image})
+      {Key? key,
+      required this.title,
+      required this.desc,
+      required this.image,
+      required this.time})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 120,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: const Color.fromRGBO(51, 51, 51, 1),
-          )),
-      child: Row(
-        children: [
-          Container(
-            height: 100,
-            width: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image:
-                  DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return MoviesDetails(
+              title: title, time: time, desc: desc, image: 'assets/logo.jpg');
+        }));
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 120,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: const Color.fromRGBO(51, 51, 51, 1),
+            )),
+        child: Row(
+          children: [
+            Container(
+              height: 100,
+              width: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image:
+                    DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
+              ),
             ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 5),
-                Text(desc),
-              ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(desc),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -15,6 +15,7 @@ class VisitorDashBoard extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
+        backgroundColor: const Color.fromRGBO(242,242,242, 1),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -104,11 +105,8 @@ class VisitorDashBoard extends StatelessWidget {
               const SizedBox(height: 5),
               StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
-                      .collection("popular")
-                      .orderBy(
-                        'title',
-                        descending: false,
-                      )
+                      .collection('movies')
+                      .where('popular', isEqualTo: true)
                       .limit(4)
                       .snapshots(),
                   builder: (context, snapshot) {

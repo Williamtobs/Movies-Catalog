@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
+import 'package:movie_catalog/src/screens/visitors/movie_detail/movie_detail.dart';
 
 class OthersOptions extends StatelessWidget {
   final String option;
@@ -12,11 +13,11 @@ class OthersOptions extends StatelessWidget {
       {Key? key, required this.option, required this.keys, this.admin = true})
       : super(key: key);
 
-  removeFromPopular(
-      String title, BuildContext context) async {
+  removeFromPopular(String title, BuildContext context) async {
     CollectionReference reference =
-    FirebaseFirestore.instance.collection('movies');
-    await reference.doc(title.replaceAll(' ', ''))
+        FirebaseFirestore.instance.collection('movies');
+    await reference
+        .doc(title.replaceAll(' ', ''))
         .update({'popular': false}).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text('Movie removed from popular'),
@@ -92,8 +93,13 @@ class OthersOptions extends StatelessWidget {
                                 image: 'assets/logo.jpg',
                                 title: snapshot.data!.docs[index]['title'],
                                 admin: admin!,
+                                time:
+                                    "${snapshot.data!.docs[index]['period']} ${snapshot.data!.docs[index]['time']}",
+                                viewMore: keys == 'popular' ? true : false,
                                 onPressed: () {
-                                  removeFromPopular(snapshot.data!.docs[index]['title'], context);
+                                  removeFromPopular(
+                                      snapshot.data!.docs[index]['title'],
+                                      context);
                                 },
                               ),
                             );
@@ -114,8 +120,9 @@ class OthersOptions extends StatelessWidget {
 
 class EachTile extends StatelessWidget {
   final String title, desc, image;
+  final String? time;
   final Function onPressed;
-  final bool admin;
+  final bool admin, viewMore;
 
   const EachTile(
       {Key? key,
@@ -123,7 +130,9 @@ class EachTile extends StatelessWidget {
       required this.desc,
       required this.image,
       required this.onPressed,
-      required this.admin})
+      this.time,
+      required this.admin,
+      this.viewMore = false})
       : super(key: key);
 
   @override
@@ -139,52 +148,69 @@ class EachTile extends StatelessWidget {
           )),
       child: Row(
         children: [
-          Container(
-            height: 100,
-            width: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image:
-                  DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 5),
-                Text(desc),
-              ],
+          GestureDetector(
+            onTap: viewMore != true
+                ? null
+                : () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return MoviesDetails(
+                          title: title,
+                          time: time!,
+                          desc: desc,
+                          image: 'assets/logo.jpg');
+                    }));
+                  },
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.80,
+              child: Row(
+                children: [
+                  Container(
+                    height: 100,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          image: AssetImage(image), fit: BoxFit.fill),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(desc),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           admin == true
-              ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  FocusedMenuHolder(
-                      menuWidth: MediaQuery.of(context).size.width * 0.50,
-                      blurSize: 5.0,
-                      duration: const Duration(milliseconds: 100),
-                      animateMenuItems: true,
-                      openWithTap: true,
-                      // Open Focused-Menu on Tap rather than Long Press
-                      menuOffset: 10.0,
-                      // Offset value to show menuItem from the selected item
-                      bottomOffsetHeight: 80.0,
-                      onPressed: () {},
-                      menuItems: <FocusedMenuItem>[
-                        FocusedMenuItem(
-                          title: const Text('Remove from List'),
-                          onPressed: onPressed,
-                        ),
-                      ],
-                      menuItemExtent: 45,
-                      child: const Icon(Icons.delete)),
-                ])
+              ? FocusedMenuHolder(
+                  menuWidth: MediaQuery.of(context).size.width * 0.50,
+                  blurSize: 5.0,
+                  duration: const Duration(milliseconds: 100),
+                  animateMenuItems: true,
+                  openWithTap: true,
+                  // Open Focused-Menu on Tap rather than Long Press
+                  menuOffset: 10.0,
+                  // Offset value to show menuItem from the selected item
+                  bottomOffsetHeight: 80.0,
+                  onPressed: () {},
+                  menuItems: <FocusedMenuItem>[
+                    FocusedMenuItem(
+                      title: const Text('Remove from List'),
+                      onPressed: onPressed,
+                    ),
+                  ],
+                  menuItemExtent: 45,
+                  child: const Icon(Icons.delete))
               : Container()
         ],
       ),
