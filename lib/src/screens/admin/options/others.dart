@@ -12,10 +12,20 @@ class OthersOptions extends StatelessWidget {
       {Key? key, required this.option, required this.keys, this.admin = true})
       : super(key: key);
 
-  deleteMovie(int index, AsyncSnapshot snapshot) async {
-    await FirebaseFirestore.instance
-        .runTransaction((Transaction myTransaction) async {
-      await myTransaction.delete(snapshot.data.docs[index].reference);
+  removeFromPopular(
+      String title, BuildContext context) async {
+    CollectionReference reference =
+    FirebaseFirestore.instance.collection('movies');
+    await reference.doc(title.replaceAll(' ', ''))
+        .update({'popular': false}).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Movie removed from popular'),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      ));
     });
   }
 
@@ -50,13 +60,15 @@ class OthersOptions extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection(keys)
-                      .orderBy(
-                        'title',
-                        descending: false,
-                      )
-                      .snapshots(),
+                  stream: keys == 'popular'
+                      ? FirebaseFirestore.instance
+                          .collection('movies')
+                          .where('popular', isEqualTo: true)
+                          .snapshots()
+                      : FirebaseFirestore.instance
+                          .collection('movies')
+                          .where('period', isEqualTo: option)
+                          .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -81,7 +93,7 @@ class OthersOptions extends StatelessWidget {
                                 title: snapshot.data!.docs[index]['title'],
                                 admin: admin!,
                                 onPressed: () {
-                                  deleteMovie(index, snapshot);
+                                  removeFromPopular(snapshot.data!.docs[index]['title'], context);
                                 },
                               ),
                             );
