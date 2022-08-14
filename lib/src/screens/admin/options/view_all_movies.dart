@@ -5,6 +5,7 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 
 import 'add_movie.dart';
+import 'edit_movies/edit_movie.dart';
 
 class ViewALlMovies extends ConsumerStatefulWidget {
   const ViewALlMovies({Key? key}) : super(key: key);
@@ -36,9 +37,9 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
   addToPopular(
       String title, String desc, String period, BuildContext context) async {
     CollectionReference reference =
-        FirebaseFirestore.instance.collection('popular');
-    await reference
-        .add({'title': title, 'desc': desc, 'period': period}).then((value) {
+        FirebaseFirestore.instance.collection('movies');
+    await reference.doc(title.replaceAll(' ', ''))
+        .update({'popular': true}).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text('Movie added Successfully'),
         duration: const Duration(seconds: 2),
@@ -176,6 +177,18 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                               context);
                                         },
                                         onPressed2: () {},
+                                        onPressed3: () {
+                                          Navigator.push(context,
+                                              MaterialPageRoute(
+                                                  builder: (context) {
+                                            return EditMovie(
+                                              title: searchList[index]['title'],
+                                              desc: searchList[index]['desc'],
+                                              selectedText: searchList[index]
+                                                  ['period'],
+                                            );
+                                          }));
+                                        },
                                       ),
                                     );
                                   }),
@@ -251,6 +264,24 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                                     deleteMovie(
                                                         index, snapshot);
                                                   },
+                                                  onPressed3: () {
+                                                    Navigator.push(context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) {
+                                                      return EditMovie(
+                                                        title: snapshot.data!
+                                                                .docs[index]
+                                                            ['title'],
+                                                        desc: snapshot.data!
+                                                                .docs[index]
+                                                            ['desc'],
+                                                        selectedText: snapshot
+                                                                .data!
+                                                                .docs[index]
+                                                            ['period'],
+                                                      );
+                                                    }));
+                                                  },
                                                 ),
                                               );
                                             }),
@@ -276,7 +307,7 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
 
 class EachTile extends StatelessWidget {
   final String title, desc, image;
-  final Function onPressed, onPressed2;
+  final Function onPressed, onPressed2, onPressed3;
 
   const EachTile(
       {Key? key,
@@ -284,7 +315,8 @@ class EachTile extends StatelessWidget {
       required this.desc,
       required this.image,
       required this.onPressed,
-      required this.onPressed2})
+      required this.onPressed2,
+      required this.onPressed3})
       : super(key: key);
 
   @override
@@ -346,6 +378,10 @@ class EachTile extends StatelessWidget {
                     FocusedMenuItem(
                       title: const Text('Remove from Movies'),
                       onPressed: onPressed2,
+                    ),
+                    FocusedMenuItem(
+                      title: const Text('Edit Movie'),
+                      onPressed: onPressed3,
                     ),
                   ],
                   menuItemExtent: 45,

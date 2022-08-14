@@ -23,7 +23,7 @@ class VisitorDashBoard extends StatelessWidget {
                 height: 200,
                 decoration: const BoxDecoration(
                     image: DecorationImage(
-                  image: AssetImage('assets/movie.jpg'),
+                  image: AssetImage('assets/movie2.jpg'),
                   fit: BoxFit.fill,
                 )),
                 child: Column(

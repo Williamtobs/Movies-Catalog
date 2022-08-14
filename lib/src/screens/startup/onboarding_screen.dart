@@ -14,28 +14,22 @@ class OnboardScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/movie.jpg'), fit: BoxFit.fill)),
+                image: AssetImage('assets/movie2.jpg'), fit: BoxFit.fill)),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                'Ibata Tv',
-                style: TextStyle(
-                    shadows: [
-                      Shadow(
-                          color: Colors.white.withOpacity(0.7),
-                          offset: const Offset(8, 8),
-                          blurRadius: 5),
-                    ],
-                    color: const Color.fromRGBO(121, 177, 65, 1),
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800),
-              ),
+              Container(
+                  width: 250,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: Image.asset('assets/logo3.png')),
               const SizedBox(height: 10),
               const Text(
-                'Keep in track with your favourite Silver Bird Movies, only on this platform,'
+                'Keep in track with your favourite Ibata Tv Movies, only on this platform,'
                 ' you can always know when your favourite movie will be played',
                 textAlign: TextAlign.center,
                 style: TextStyle(
