@@ -15,7 +15,7 @@ class OthersOptions extends StatelessWidget {
 
   removeFromPopular(String title, BuildContext context) async {
     CollectionReference reference =
-        FirebaseFirestore.instance.collection('movies');
+    FirebaseFirestore.instance.collection('movies');
     await reference
         .doc(title.replaceAll(' ', ''))
         .update({'popular': false}).then((value) {
@@ -63,13 +63,13 @@ class OthersOptions extends StatelessWidget {
               StreamBuilder<QuerySnapshot>(
                   stream: keys == 'popular'
                       ? FirebaseFirestore.instance
-                          .collection('movies')
-                          .where('popular', isEqualTo: true)
-                          .snapshots()
+                      .collection('movies')
+                      .where('popular', isEqualTo: true)
+                      .snapshots()
                       : FirebaseFirestore.instance
-                          .collection('movies')
-                          .where('period', isEqualTo: option)
-                          .snapshots(),
+                      .collection('movies')
+                      .where('period', isEqualTo: option)
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -93,8 +93,11 @@ class OthersOptions extends StatelessWidget {
                                 image: 'assets/logo.jpg',
                                 title: snapshot.data!.docs[index]['title'],
                                 admin: admin!,
+                                details: snapshot.data!.docs[index]['details'],
                                 time:
-                                    "${snapshot.data!.docs[index]['period']} ${snapshot.data!.docs[index]['time']}",
+                                "${snapshot.data!
+                                    .docs[index]['period']} ${snapshot.data!
+                                    .docs[index]['time']}",
                                 viewMore: keys == 'popular' ? true : false,
                                 onPressed: () {
                                   removeFromPopular(
@@ -119,26 +122,29 @@ class OthersOptions extends StatelessWidget {
 }
 
 class EachTile extends StatelessWidget {
-  final String title, desc, image;
+  final String title, desc, image, details;
   final String? time;
   final Function onPressed;
   final bool admin, viewMore;
 
-  const EachTile(
-      {Key? key,
-      required this.title,
-      required this.desc,
-      required this.image,
-      required this.onPressed,
-      this.time,
-      required this.admin,
-      this.viewMore = false})
+  const EachTile({Key? key,
+    required this.title,
+    required this.desc,
+    required this.image,
+    required this.onPressed,
+    this.time,
+    required this.details,
+    required this.admin,
+    this.viewMore = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       height: 120,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -152,17 +158,21 @@ class EachTile extends StatelessWidget {
             onTap: viewMore != true
                 ? null
                 : () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return MoviesDetails(
-                          title: title,
-                          time: time!,
-                          desc: desc,
-                          image: 'assets/logo.jpg');
-                    }));
-                  },
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) {
+                    return MoviesDetails(
+                        title: title,
+                        time: time!,
+                        desc: desc,
+                        details:details,
+                        image: 'assets/logo.jpg');
+                  }));
+            },
             child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.80,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.80,
               child: Row(
                 children: [
                   Container(
@@ -193,24 +203,27 @@ class EachTile extends StatelessWidget {
           ),
           admin == true
               ? FocusedMenuHolder(
-                  menuWidth: MediaQuery.of(context).size.width * 0.50,
-                  blurSize: 5.0,
-                  duration: const Duration(milliseconds: 100),
-                  animateMenuItems: true,
-                  openWithTap: true,
-                  // Open Focused-Menu on Tap rather than Long Press
-                  menuOffset: 10.0,
-                  // Offset value to show menuItem from the selected item
-                  bottomOffsetHeight: 80.0,
-                  onPressed: () {},
-                  menuItems: <FocusedMenuItem>[
-                    FocusedMenuItem(
-                      title: const Text('Remove from List'),
-                      onPressed: onPressed,
-                    ),
-                  ],
-                  menuItemExtent: 45,
-                  child: const Icon(Icons.delete))
+              menuWidth: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.50,
+              blurSize: 5.0,
+              duration: const Duration(milliseconds: 100),
+              animateMenuItems: true,
+              openWithTap: true,
+              // Open Focused-Menu on Tap rather than Long Press
+              menuOffset: 10.0,
+              // Offset value to show menuItem from the selected item
+              bottomOffsetHeight: 80.0,
+              onPressed: () {},
+              menuItems: <FocusedMenuItem>[
+                FocusedMenuItem(
+                  title: const Text('Remove from List'),
+                  onPressed: onPressed,
+                ),
+              ],
+              menuItemExtent: 45,
+              child: const Icon(Icons.delete))
               : Container()
         ],
       ),

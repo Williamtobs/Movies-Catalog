@@ -15,7 +15,7 @@ class VisitorDashBoard extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(242,242,242, 1),
+        backgroundColor: const Color.fromRGBO(242, 242, 242, 1),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -139,6 +139,8 @@ class VisitorDashBoard extends StatelessWidget {
                                               ['title'],
                                           desc: snapshot.data!.docs[index]
                                               ['desc'],
+                                          details: snapshot.data!.docs[index]
+                                              ['details'],
                                           time: snapshot.data!.docs[index]
                                               ['period'],
                                         );
@@ -224,8 +226,11 @@ class VisitorDashBoard extends StatelessWidget {
                                               ['title'],
                                           desc: snapshot.data!.docs[index]
                                               ['desc'],
-                                          time: snapshot.data!.docs[index]
-                                              ['period'],
+                                          time:
+                                              "${snapshot.data!.docs[index]['period']} "
+                                                  "${snapshot.data!.docs[index]['time']}",
+                                          details: snapshot.data!.docs[index]
+                                              ['details'],
                                         );
                                       }));
                                     },

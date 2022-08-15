@@ -132,6 +132,7 @@ class _AllMovies extends ConsumerState<AllMovies> {
                                         time:
                                             "${searchList[index]['period']} ${searchList[index]['time']}",
                                         admin: false,
+                                        details: searchList[index]['details'],
                                         viewMore: true,
                                         onPressed: () {
                                           // deleteMovie(index, snapshot);
@@ -194,6 +195,8 @@ class _AllMovies extends ConsumerState<AllMovies> {
                                                   image: 'assets/logo.jpg',
                                                   title: snapshot.data!
                                                       .docs[index]['title'],
+                                                  details: snapshot.data!
+                                                      .docs[index]['details'],
                                                   admin: false,
                                                   time:
                                                       "${snapshot.data!.docs[index]['period']} ${snapshot.data!.docs[index]['time']}",

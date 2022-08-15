@@ -46,6 +46,7 @@ class EachOptions extends StatelessWidget {
                               child: EachTile(
                                 desc: snapshot.data!.docs[index]['desc'],
                                 image: 'assets/logo.jpg',
+                                details: snapshot.data!.docs[index]['details'],
                                 time:
                                     "${snapshot.data!.docs[index]['period']} ${snapshot.data!.docs[index]['time']}",
                                 title: snapshot.data!.docs[index]['title'],
@@ -67,13 +68,14 @@ class EachOptions extends StatelessWidget {
 }
 
 class EachTile extends StatelessWidget {
-  final String title, desc, image, time;
+  final String title, desc, image, time, details;
 
   const EachTile(
       {Key? key,
       required this.title,
       required this.desc,
       required this.image,
+      required this.details,
       required this.time})
       : super(key: key);
 
@@ -83,7 +85,11 @@ class EachTile extends StatelessWidget {
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return MoviesDetails(
-              title: title, time: time, desc: desc, image: 'assets/logo.jpg');
+              details: details,
+              title: title,
+              time: time,
+              desc: desc,
+              image: 'assets/logo.jpg');
         }));
       },
       child: Container(

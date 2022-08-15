@@ -15,6 +15,7 @@ class _AddMovieState extends State<AddMovie> {
   final List schedule = ['Morning', 'Afternoon', 'Night'];
   final TextEditingController title = TextEditingController();
   final TextEditingController desc = TextEditingController();
+  final TextEditingController details = TextEditingController();
   FirebaseStorage storage = FirebaseStorage.instance;
 
   String? selectedText;
@@ -55,8 +56,8 @@ class _AddMovieState extends State<AddMovie> {
   //   }
   // }
 
-  addToCollection(
-      String collection, String title, String desc, String time) async {
+  addToCollection(String collection, String title, String desc, String time,
+      String details) async {
     CollectionReference reference =
         FirebaseFirestore.instance.collection(collection);
     await reference.doc(title.replaceAll(' ', '')).set({
@@ -64,6 +65,7 @@ class _AddMovieState extends State<AddMovie> {
       'desc': desc,
       'period': collection,
       'image_path': (title).replaceAll(' ', ''),
+      'details': details,
       'time': time
     }).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -79,7 +81,8 @@ class _AddMovieState extends State<AddMovie> {
     });
   }
 
-  addToMovies(String collection, String title, String desc, String time) async {
+  addToMovies(String collection, String title, String desc, String time,
+      String details) async {
     CollectionReference reference =
         FirebaseFirestore.instance.collection('movies');
     await reference.doc(title.replaceAll(' ', '')).set({
@@ -87,9 +90,10 @@ class _AddMovieState extends State<AddMovie> {
       'desc': desc,
       'period': collection,
       'time': time,
-      'popular' : false
+      'details': details,
+      'popular': false
     }).then((value) {
-      addToCollection(collection, title, desc, time);
+      addToCollection(collection, title, desc, time, details);
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(error),
@@ -174,6 +178,42 @@ class _AddMovieState extends State<AddMovie> {
                           borderRadius: BorderRadius.circular(15)),
                       child: TextFormField(
                         controller: title,
+                        style: const TextStyle(
+                            color: Color.fromRGBO(75, 78, 85, 1),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          filled: true,
+                          contentPadding: EdgeInsets.all(15),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Movie Details',
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 80,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: const Color.fromRGBO(197, 198, 200, 1.0),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
+                        maxLines: 4,
+                        controller: details,
                         style: const TextStyle(
                             color: Color.fromRGBO(75, 78, 85, 1),
                             fontSize: 14,
@@ -316,7 +356,8 @@ class _AddMovieState extends State<AddMovie> {
                                                     onTap: () {
                                                       setState(() {
                                                         selectedTime =
-                                                            afternoonTime[index];
+                                                            afternoonTime[
+                                                                index];
                                                       });
                                                     },
                                                     child: TimeSelection(
@@ -360,7 +401,7 @@ class _AddMovieState extends State<AddMovie> {
                       if (selectedText != null || title.text.isNotEmpty) {
                         //uploadImage();
                         addToMovies(selectedText!, title.text, desc.text,
-                            selectedTime!);
+                            selectedTime!, details.text.trim());
                         title.clear();
                         desc.clear();
                       }
