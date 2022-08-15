@@ -5,12 +5,14 @@ import '../../../../util/app_string.dart';
 import '../add_movie.dart';
 
 class EditMovie extends StatefulWidget {
-  final String title, desc, selectedText;
+  final String title, desc, selectedText, details, time;
 
   const EditMovie(
       {Key? key,
       required this.title,
       required this.desc,
+      required this.details,
+      required this.time,
       required this.selectedText})
       : super(key: key);
 
@@ -23,6 +25,7 @@ class _EditMovieState extends State<EditMovie> {
 
   TextEditingController title = TextEditingController();
   TextEditingController desc = TextEditingController();
+  TextEditingController details = TextEditingController();
   String? selectedText;
   String? selectedTime;
 
@@ -30,7 +33,9 @@ class _EditMovieState extends State<EditMovie> {
   initState() {
     title = TextEditingController(text: widget.title);
     desc = TextEditingController(text: widget.desc);
+    details = TextEditingController(text: widget.details);
     selectedText = widget.selectedText;
+    selectedTime = widget.time;
     super.initState();
   }
 
@@ -48,11 +53,17 @@ class _EditMovieState extends State<EditMovie> {
   //   }
   // }
 
-  editMovie(String collection, String title, String desc, String time) async {
+  editMovie(String collection, String title, String desc, String time,
+      String details) async {
     CollectionReference reference =
         FirebaseFirestore.instance.collection('movies');
-    await reference.doc(title.replaceAll(' ', '')).set(
-        {'title': title, 'desc': desc, 'period': collection}).then((value) {
+    await reference.doc(title.replaceAll(' ', '')).set({
+      'title': title,
+      'desc': desc,
+      'period': collection,
+      'time': time,
+      'details': details
+    }).then((value) {
       print('value');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text('Movie Edited'),
@@ -144,6 +155,42 @@ class _EditMovieState extends State<EditMovie> {
                         borderRadius: BorderRadius.circular(15)),
                     child: TextFormField(
                       controller: title,
+                      style: const TextStyle(
+                          color: Color.fromRGBO(75, 78, 85, 1),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        filled: true,
+                        contentPadding: EdgeInsets.all(15),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Movie Details',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 80,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: const Color.fromRGBO(197, 198, 200, 1.0),
+                        borderRadius: BorderRadius.circular(15)),
+                    child: TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
+                      maxLines: 4,
+                      controller: details,
                       style: const TextStyle(
                           color: Color.fromRGBO(75, 78, 85, 1),
                           fontSize: 14,
@@ -327,7 +374,8 @@ class _EditMovieState extends State<EditMovie> {
                 child: TextButton(
                     onPressed: () {
                       if (selectedText != null || title.text.isNotEmpty) {
-                        editMovie(selectedText!, title.text, desc.text, selectedTime!);
+                        editMovie(selectedText!, title.text, desc.text,
+                            selectedTime!, details.text);
                         //title.clear();
                         //desc.clear();
                       }

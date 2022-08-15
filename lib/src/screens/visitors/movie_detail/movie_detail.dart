@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 
 class MoviesDetails extends StatelessWidget {
-  final String title, image, desc, time;
+  final String title, image, desc, time, details;
 
-  const MoviesDetails({Key? key, required this.title, required this.image, required this.desc, required this.time})
+  const MoviesDetails(
+      {Key? key,
+      required this.title,
+      required this.image,
+      required this.desc,
+      required this.time,
+      required this.details})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(242, 242, 242, 1),
       appBar: AppBar(
         leading: InkWell(
           onTap: () {
@@ -32,6 +39,7 @@ class MoviesDetails extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 20),
           Center(
             child: Container(
               height: 300,
@@ -52,10 +60,26 @@ class MoviesDetails extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Padding(
-            padding:const EdgeInsets.only(left: 15.0, right: 15.0),
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
             child: Text(
               time,
               style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Padding(
+            padding: EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Text(
+              'Movie Details',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+            ),
+          ),
+          const SizedBox(height: 5),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Text(
+              details,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
             ),
           ),
           const SizedBox(height: 20),

@@ -38,7 +38,8 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
       String title, String desc, String period, BuildContext context) async {
     CollectionReference reference =
         FirebaseFirestore.instance.collection('movies');
-    await reference.doc(title.replaceAll(' ', ''))
+    await reference
+        .doc(title.replaceAll(' ', ''))
         .update({'popular': true}).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text('Movie added Successfully'),
@@ -186,6 +187,10 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                               desc: searchList[index]['desc'],
                                               selectedText: searchList[index]
                                                   ['period'],
+                                              details: searchList[index]
+                                                  ['details'],
+                                              time: searchList[index]
+                                              ['time'],
                                             );
                                           }));
                                         },
@@ -275,6 +280,12 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                                         desc: snapshot.data!
                                                                 .docs[index]
                                                             ['desc'],
+                                                        details: snapshot.data!
+                                                                .docs[index]
+                                                            ['details'],
+                                                        time: snapshot.data!
+                                                            .docs[index]
+                                                        ['time'],
                                                         selectedText: snapshot
                                                                 .data!
                                                                 .docs[index]

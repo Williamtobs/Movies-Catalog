@@ -2,7 +2,7 @@
     package="com.example.movie_catalog">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="movie_catalog"
+        android:label="Ibaka Movie Catalog"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
