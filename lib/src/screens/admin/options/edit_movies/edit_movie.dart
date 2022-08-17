@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../../../../util/app_string.dart';
 import '../add_movie.dart';
 
 class EditMovie extends StatefulWidget {
-  final String title, desc, selectedText, details, time;
+  final String title, desc, selectedText, details, time, date;
 
   const EditMovie(
       {Key? key,
@@ -13,6 +14,7 @@ class EditMovie extends StatefulWidget {
       required this.desc,
       required this.details,
       required this.time,
+      required this.date,
       required this.selectedText})
       : super(key: key);
 
@@ -28,6 +30,7 @@ class _EditMovieState extends State<EditMovie> {
   TextEditingController details = TextEditingController();
   String? selectedText;
   String? selectedTime;
+  String? selectedDate;
 
   @override
   initState() {
@@ -36,6 +39,7 @@ class _EditMovieState extends State<EditMovie> {
     details = TextEditingController(text: widget.details);
     selectedText = widget.selectedText;
     selectedTime = widget.time;
+    selectedDate = widget.date;
     super.initState();
   }
 
@@ -54,7 +58,7 @@ class _EditMovieState extends State<EditMovie> {
   // }
 
   editMovie(String collection, String title, String desc, String time,
-      String details) async {
+      String details, String date) async {
     CollectionReference reference =
         FirebaseFirestore.instance.collection('movies');
     await reference.doc(title.replaceAll(' ', '')).set({
@@ -62,6 +66,7 @@ class _EditMovieState extends State<EditMovie> {
       'desc': desc,
       'period': collection,
       'time': time,
+      'date' : date,
       'details': details
     }).then((value) {
       print('value');
@@ -240,6 +245,50 @@ class _EditMovieState extends State<EditMovie> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Pick Date',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  GestureDetector(
+                    onTap: () {
+                      DatePicker.showDatePicker(context,
+                          showTitleActions: true,
+                          minTime: DateTime.now(),
+                          maxTime: DateTime(2023, 12, 7), onConfirm: (date) {
+                            setState(() {
+                              selectedDate = date.toString().substring(0, 10);
+                            });
+                          },
+                          currentTime: selectedDate != null
+                              ? DateTime(
+                              int.parse(selectedDate!.substring(0, 4)),
+                              int.parse(selectedDate!.substring(5, 7)),
+                              int.parse(selectedDate!.substring(8, 10)))
+                              : DateTime.now(),
+                          locale: LocaleType.en);
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 50,
+                      padding: const EdgeInsets.all(15),
+                      //alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: const Color.fromRGBO(197, 198, 200, 1.0),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Text(selectedDate ?? 'Click to choose a date',
+                          style: const TextStyle(
+                              color: Color.fromRGBO(75, 78, 85, 1),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400)),
+                    ),
+                  ),
                   const SizedBox(height: 15),
                   const Text(
                     'Select Schedule',
@@ -375,7 +424,7 @@ class _EditMovieState extends State<EditMovie> {
                     onPressed: () {
                       if (selectedText != null || title.text.isNotEmpty) {
                         editMovie(selectedText!, title.text, desc.text,
-                            selectedTime!, details.text);
+                            selectedTime!, details.text, selectedDate!);
                         //title.clear();
                         //desc.clear();
                       }

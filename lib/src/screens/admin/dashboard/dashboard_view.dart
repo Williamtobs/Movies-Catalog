@@ -49,7 +49,7 @@ class AdminDashboardView extends StatelessWidget {
                                     'View All Movies') {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return ViewALlMovies();
+                                    return const ViewALlMovies();
                                   }));
                                 } else if (grid['title'] as String ==
                                     'Add New Movie') {

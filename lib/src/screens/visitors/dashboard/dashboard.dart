@@ -134,6 +134,8 @@ class VisitorDashBoard extends StatelessWidget {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
                                         return MoviesDetails(
+                                          date: snapshot.data!.docs[index]
+                                          ['date'],
                                           image: 'assets/logo.jpg',
                                           title: snapshot.data!.docs[index]
                                               ['title'],
@@ -221,6 +223,8 @@ class VisitorDashBoard extends StatelessWidget {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
                                         return MoviesDetails(
+                                          date: snapshot.data!.docs[index]
+                                          ['date'],
                                           image: 'assets/logo.jpg',
                                           title: snapshot.data!.docs[index]
                                               ['title'],
@@ -309,7 +313,7 @@ class AvailableMovie extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               Text(
-                desc,
+                desc.length > 95 ? "${desc.substring(0, 95)}..." : desc,
                 style:
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
               )
