@@ -183,6 +183,7 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                               MaterialPageRoute(
                                                   builder: (context) {
                                             return EditMovie(
+                                              date: searchList[index]['date'],
                                               title: searchList[index]['title'],
                                               desc: searchList[index]['desc'],
                                               selectedText: searchList[index]
@@ -274,6 +275,9 @@ class _ViewALlMovies extends ConsumerState<ViewALlMovies> {
                                                         MaterialPageRoute(
                                                             builder: (context) {
                                                       return EditMovie(
+                                                        date: snapshot.data!
+                                                            .docs[index]
+                                                        ['date'],
                                                         title: snapshot.data!
                                                                 .docs[index]
                                                             ['title'],
@@ -363,7 +367,7 @@ class EachTile extends StatelessWidget {
                       fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 5),
-                Text(desc),
+                Text(desc.length > 95 ? "${desc.substring(0, 95)}..." : desc),
               ],
             ),
           ),
@@ -387,12 +391,12 @@ class EachTile extends StatelessWidget {
                       onPressed: onPressed,
                     ),
                     FocusedMenuItem(
-                      title: const Text('Remove from Movies'),
-                      onPressed: onPressed2,
-                    ),
-                    FocusedMenuItem(
                       title: const Text('Edit Movie'),
                       onPressed: onPressed3,
+                    ),
+                    FocusedMenuItem(
+                      title: const Text('Remove from Movies'),
+                      onPressed: onPressed2,
                     ),
                   ],
                   menuItemExtent: 45,

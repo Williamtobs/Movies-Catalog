@@ -44,6 +44,7 @@ class EachOptions extends StatelessWidget {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
                               child: EachTile(
+                                date: snapshot.data!.docs[index]['date'],
                                 desc: snapshot.data!.docs[index]['desc'],
                                 image: 'assets/logo.jpg',
                                 details: snapshot.data!.docs[index]['details'],
@@ -68,7 +69,7 @@ class EachOptions extends StatelessWidget {
 }
 
 class EachTile extends StatelessWidget {
-  final String title, desc, image, time, details;
+  final String title, desc, image, time, details, date;
 
   const EachTile(
       {Key? key,
@@ -76,6 +77,7 @@ class EachTile extends StatelessWidget {
       required this.desc,
       required this.image,
       required this.details,
+      required this.date,
       required this.time})
       : super(key: key);
 
@@ -89,6 +91,7 @@ class EachTile extends StatelessWidget {
               title: title,
               time: time,
               desc: desc,
+              date: date,
               image: 'assets/logo.jpg');
         }));
       },
@@ -123,7 +126,7 @@ class EachTile extends StatelessWidget {
                         fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5),
-                  Text(desc),
+                  Text(desc.length > 90 ? "${desc.substring(0, 90)}..." : desc),
                 ],
               ),
             ),

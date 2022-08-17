@@ -126,6 +126,7 @@ class _AllMovies extends ConsumerState<AllMovies> {
                                       padding:
                                           const EdgeInsets.only(bottom: 8.0),
                                       child: EachTile(
+                                        date: searchList[index]['date'],
                                         desc: searchList[index]['desc'],
                                         image: 'assets/logo.jpg',
                                         title: searchList[index]['title'],
@@ -190,6 +191,8 @@ class _AllMovies extends ConsumerState<AllMovies> {
                                                 padding: const EdgeInsets.only(
                                                     bottom: 8.0),
                                                 child: EachTile(
+                                                  date: snapshot.data!.docs[index]
+                                                  ['date'],
                                                   desc: snapshot.data!
                                                       .docs[index]['desc'],
                                                   image: 'assets/logo.jpg',
